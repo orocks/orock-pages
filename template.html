@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>orocks — index</title>
+  <title>PAGE_TITLE</title>
   <style>
     /* === orock-pages house style: light theme, bare CSS, old-internet look === */
     body {
@@ -17,17 +17,36 @@
     }
     a { color: #0000ee; text-decoration: underline; }
     a:visited { color: #551a8b; }
-    h1, h2 {
+    h1, h2, h3, h4 {
       font-family: "Helvetica Neue", Arial, sans-serif;
       font-weight: bold;
       line-height: 1.2;
     }
     h1 { font-size: 1.8rem; border-bottom: 2px solid #111; padding-bottom: 0.3rem; }
     h2 { font-size: 1.3rem; margin-top: 2rem; border-bottom: 1px solid #999; padding-bottom: 0.15rem; }
+    h3 { font-size: 1.1rem; margin-top: 1.5rem; }
     p { margin: 0.7rem 0; }
-    ul { padding-left: 1.6rem; margin: 0.7rem 0; }
-    li { margin: 0.5rem 0; }
-    li small { color: #666; }
+    ul, ol { padding-left: 1.6rem; margin: 0.7rem 0; }
+    li { margin: 0.35rem 0; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.9rem; }
+    th, td { border: 1px solid #999; padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
+    th { background: #eee; }
+    code, pre {
+      font-family: "Courier New", "Lucida Console", monospace;
+      background: #f0f0f0;
+      font-size: 0.9em;
+    }
+    code { padding: 0.1em 0.3em; }
+    pre { padding: 0.7rem; overflow-x: auto; border: 1px solid #ccc; }
+    blockquote {
+      margin: 1rem 0;
+      padding: 0.2rem 1rem;
+      border-left: 3px solid #999;
+      color: #444;
+      font-style: italic;
+    }
+    hr { border: none; border-top: 1px solid #ccc; margin: 2rem 0; }
+    .nav { font-size: 0.9rem; margin-bottom: 1.5rem; }
     .footer {
       margin-top: 2.5rem;
       padding-top: 1rem;
@@ -40,17 +59,14 @@
 </head>
 <body>
 
-<h1>orocks</h1>
-<p>Tools, documents, demos &amp; publications.</p>
+<div class="nav"><a href="index.html">&larr; home</a></div>
 
-<h2>Pages</h2>
-<ul>
-  <li><a href="solar-weather-station-guide.html">Solar-Powered ESP32 Weather Station via LoRa</a><br>
-      <small>Research compilation: deep sleep, solar power, LoRa, sensors, and a full BOM.</small></li>
-</ul>
+<h1>PAGE_TITLE</h1>
+
+<!-- CONTENT GOES HERE -->
 
 <div class="footer">
-  <p>orock-pages · GitHub Pages</p>
+  <p>orock-pages · <a href="index.html">index</a></p>
 </div>
 
 </body>
