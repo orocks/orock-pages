@@ -1,0 +1,4 @@
+# This file is used by GitHub Pages to tell Jekyll to skip processing
+# We're using static HTML, not Jekyll
+jekyll:
+  version: 0.0.0
