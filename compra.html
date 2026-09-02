@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de la compra</title>
+  <style>
+    :root {
+      --bg: #fdfdfd;
+      --text: #111;
+      --muted: #666;
+      --line: #ccc;
+      --done: #999;
+      --accent: #1a5276;
+      --danger: #b03a2e;
+      --radius: 4px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.55;
+      max-width: 36rem;
+      margin: 2rem auto;
+      padding: 0 1.2rem;
+    }
+    a { color: var(--accent); }
+    h1 {
+      font-size: 1.8rem;
+      border-bottom: 2px solid #111;
+      padding-bottom: 0.3rem;
+      margin-bottom: 0.2rem;
+    }
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+    /* --- list --- */
+    .list-container { margin-bottom: 1.5rem; }
+    .item {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #eee;
+      gap: 0.6rem;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; } }
+    .item input[type="checkbox"] {
+      width: 1.2rem;
+      height: 1.2rem;
+      accent-color: var(--accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .item-info { flex: 1; min-width: 0; }
+    .item-name {
+      font-size: 1rem;
+      display: block;
+    }
+    .item-name.done {
+      text-decoration: line-through;
+      color: var(--done);
+    }
+    .item-qty {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .item-qty.done {
+      text-decoration: line-through;
+    }
+    .btn-remove {
+      background: none;
+      border: 1px solid transparent;
+      color: var(--danger);
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 0.15rem 0.4rem;
+      border-radius: var(--radius);
+      opacity: 0.6;
+      flex-shrink: 0;
+    }
+    .btn-remove:hover { opacity: 1; background: #fdecea; }
+    /* --- summary --- */
+    .summary {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+    /* --- form --- */
+    .add-form {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .add-form input {
+      padding: 0.4rem 0.6rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+    .add-form input[name="name"] { flex: 2; min-width: 8rem; }
+    .add-form input[name="qty"] { flex: 1; min-width: 6rem; }
+    .add-form button {
+      padding: 0.4rem 1rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .add-form button:hover { opacity: 0.85; }
+    /* --- actions --- */
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .actions button {
+      padding: 0.35rem 0.8rem;
+      background: none;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--muted);
+    }
+    .actions button:hover { border-color: var(--text); color: var(--text); }
+    .footer {
+      margin-top: 2.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid #ccc;
+      font-size: 0.8rem;
+      color: #999;
+    }
+    .empty-msg {
+      color: var(--muted);
+      font-style: italic;
+      padding: 1rem 0;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🛒 Lista de la compra</h1>
+<p class="subtitle">Marca, añade o elimina productos. Los cambios se guardan en este dispositivo.</p>
+
+<div class="summary" id="summary">0 / 0 comprados</div>
+
+<div class="list-container" id="list-container"></div>
+
+<form class="add-form" id="add-form">
+  <input type="text" name="name" placeholder="Nombre del producto" required autocomplete="off">
+  <input type="text" name="qty" placeholder="Cantidad (ej: 2 kg)">
+  <button type="submit">Añadir</button>
+</form>
+
+<div class="actions">
+  <button id="btn-clear-done" title="Quitar los comprados">Limpiar comprados</button>
+  <button id="btn-reset" title="Borrar todo">Borrar todo</button>
+</div>
+
+<div class="footer">
+  <p><a href="index.html">← Volver al inicio</a> · orock-pages</p>
+</div>
+
+<script>
+(function () {
+  const STORAGE_KEY = 'compra_list';
+  let items = loadItems();
+
+  function loadItems() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveItems() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  }
+
+  const container = document.getElementById('list-container');
+  const summaryEl = document.getElementById('summary');
+  const form = document.getElementById('add-form');
+
+  function render() {
+    const total = items.length;
+    const done = items.filter(i => i.done).length;
+    summaryEl.textContent = total ? `${done} / ${total} comprados` : 'Lista vacía';
+
+    if (!total) {
+      container.innerHTML = '<p class="empty-msg">No hay productos aún. Añade uno abajo.</p>';
+      return;
+    }
+
+    container.innerHTML = '';
+    items.forEach(function (item, idx) {
+      const div = document.createElement('div');
+      div.className = 'item';
+
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!item.done;
+      cb.addEventListener('change', function () {
+        items[idx].done = cb.checked;
+        saveItems();
+        render();
+      });
+
+      const info = document.createElement('div');
+      info.className = 'item-info';
+
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'item-name' + (item.done ? ' done' : '');
+      nameSpan.textContent = item.name;
+
+      const qtySpan = document.createElement('span');
+      qtySpan.className = 'item-qty' + (item.done ? ' done' : '');
+      qtySpan.textContent = item.qty ? item.qty : '';
+
+      info.appendChild(nameSpan);
+      info.appendChild(qtySpan);
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'btn-remove';
+      removeBtn.textContent = '✕';
+      removeBtn.title = 'Quitar';
+      removeBtn.addEventListener('click', function () {
+        items.splice(idx, 1);
+        saveItems();
+        render();
+      });
+
+      div.appendChild(cb);
+      div.appendChild(info);
+      div.appendChild(removeBtn);
+      container.appendChild(div);
+    });
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const nameEl = form.querySelector('input[name="name"]');
+    const qtyEl = form.querySelector('input[name="qty"]');
+    const name = nameEl.value.trim();
+    const qty = qtyEl.value.trim();
+    if (!name) return;
+    items.push({ name: name, qty: qty, done: false });
+    saveItems();
+    nameEl.value = '';
+    qtyEl.value = '';
+    nameEl.focus();
+    render();
+  });
+
+  document.getElementById('btn-clear-done').addEventListener('click', function () {
+    items = items.filter(function (i) { return !i.done; });
+    saveItems();
+    render();
+  });
+
+  document.getElementById('btn-reset').addEventListener('click', function () {
+    if (confirm('¿Borrar toda la lista?')) {
+      items = [];
+      saveItems();
+      render();
+    }
+  });
+
+  // Seed default items on first visit
+  if (!localStorage.getItem(STORAGE_KEY + '_seeded')) {
+    items = [
+      { name: "Carne picada", qty: "2,5 kg", done: false },
+      { name: "Tomate triturado", qty: "2 kg", done: false },
+      { name: "Cebolla", qty: "1 kg", done: false },
+      { name: "Zanahoria", qty: "500 g", done: false },
+      { name: "Pimiento rojo", qty: "2", done: false },
+      { name: "Ajo", qty: "6–8 dientes", done: false },
+      { name: "Vino tinto", qty: "2 vasos", done: false },
+      { name: "Placas de lasaña", qty: "1,5–1,8 kg", done: false },
+      { name: "Leche", qty: "3–3,5 L", done: false },
+      { name: "Mantequilla", qty: "250 g", done: false },
+      { name: "Harina", qty: "250 g", done: false },
+      { name: "Mozzarella", qty: "1 kg", done: false },
+      { name: "Parmesano / Grana Padano", qty: "500–600 g", done: false },
+      { name: "Emmental (opcional)", qty: "300–400 g", done: false }
+    ];
+    saveItems();
+    localStorage.setItem(STORAGE_KEY + '_seeded', '1');
+    render();
+  } else {
+    render();
+  }
+})();
+</script>
+
+</body>
+</html>
