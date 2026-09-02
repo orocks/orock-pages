@@ -110,16 +110,8 @@
   <li><strong>Adafruit BME680</strong> — <a href="https://www.adafruit.com/product/3660">Adafruit</a>. ±3% humidity, ±1 hPa pressure, ±1.0°C temp accuracy.</li>
 </ul>
 
-<h3>Wind Speed &amp; Direction</h3>
+<h3>UV Index</h3>
 <ul>
-  <li><strong>Multi-sensor weather station under $100</strong> — <a href="https://botmonster.com/smart-home/build-weather-station-esphome-wind-rain-uv-sensors/">Botmonster Tech</a>. Uses <strong>Davis 6410 anemometer</strong> (industrial-grade) with ESPHome.</li>
-  <li><strong>ESP32 with an Anemometer</strong> — <a href="https://randomnerdtutorials.com/esp32-anemometer-wind-speed-arduino/">Random Nerd Tutorials</a>. Wiring and code for reed-switch anemometers.</li>
-  <li><strong>ESP32 Weather Station</strong> — <a href="https://www.elektormagazine.com/labs/esp32-weather-station-180468">Elektor Magazine</a>. Wind vane with resistor divider, reed-switch anemometer (tested hardware).</li>
-</ul>
-
-<h3>Rainfall &amp; UV</h3>
-<ul>
-  <li><strong>DIY Weather Station With ESP32</strong> — <a href="https://www.instructables.com/DIY-Weather-Station-With-ESP32/">Instructables</a>. Tipping-bucket rain gauge integration.</li>
   <li><strong>VEML6075 UV Sensor</strong> — <a href="https://www.adafruit.com/product/1493">Adafruit</a>. I2C UV index sensor.</li>
 </ul>
 
@@ -127,8 +119,8 @@
 <ul>
   <li><strong>Solar-Powered Weather Station with LoRa</strong> — <a href="https://blog.balena.io/build-a-simple-solar-powered-weather-station-with-lora-the-things-network/">balena Blog (2020)</a>. Two-part series: solar weather station + LoRa + The Things Stack.</li>
   <li><strong>LoRa Based Wireless Weather Station</strong> — <a href="https://how2electronics.com/lora-based-wireless-weather-station-with-arduino-esp32/">How2Electronics</a>. ESP32 + LoRa wireless station architecture.</li>
-  <li><strong>bitrot-alpha/lora-weather-esp32</strong> — <a href="https://github.com/bitrot-alpha/lora-weather-esp32">GitHub</a>. Full open-source station: wind speed/direction, rainfall, environmental sensors.</li>
-  <li><strong>How to Build a Smart Weather Station</strong> — <a href="https://www.ampheo.com/blog/how-to-build-a-smart-weather-station-with-sensors">Ampheo</a>. Temp, humidity, pressure, rainfall, wind.</li>
+  <li><strong>bitrot-alpha/lora-weather-esp32</strong> — <a href="https://github.com/bitrot-alpha/lora-weather-esp32">GitHub</a>. Full open-source station with environmental sensors.</li>
+  <li><strong>How to Build a Smart Weather Station</strong> — <a href="https://www.ampheo.com/blog/how-to-build-a-smart-weather-station-with-sensors">Ampheo</a>. Temp, humidity, pressure, UV sensors.</li>
   <li><strong>DIY LoRaWAN Weather Station for Large Acreage</strong> — <a href="https://aboutagri.com/diy-lorawan-weather-station-large-acreage/">About Agri (2026)</a>. Firmware, sensor selection, large-distance deployments.</li>
 </ul>
 
@@ -149,9 +141,6 @@
   <tr><td>MCU</td><td>ESP32-WROOM-32 or ESP32-C3</td><td>ESP32 for Wi-Fi backup; ESP32-C3 for lower deep-sleep current (~6µA)</td></tr>
   <tr><td>LoRa Module</td><td>SX1262 (Ra-02 module)</td><td>Better sensitivity (-165 dBm) and lower RX current vs SX1276</td></tr>
   <tr><td>Environmental Sensor</td><td>BME280</td><td>±1 hPa pressure, ±3% RH. Avoid cheap DHT11/DHT22</td></tr>
-  <tr><td>Wind Speed Sensor</td><td>Reed-switch anemometer or Davis 6410</td><td>Davis = industrial grade; reed-switch = budget but reliable</td></tr>
-  <tr><td>Wind Direction</td><td>Potentiometer vane or HMC5883L</td><td>Pot: simpler; HMC5883L: no moving parts</td></tr>
-  <tr><td>Rain Gauge</td><td>Tipping-bucket (DFRobot / PMS-G010)</td><td>Mechanical, not IR-based</td></tr>
   <tr><td>UV Sensor</td><td>VEML6075 (I2C)</td><td>UV index measurement</td></tr>
   <tr><td>Solar Charger</td><td>TP4056 module (with protection)</td><td>For 1S LiPo/18650; LiFePO4 needs a matched charger</td></tr>
   <tr><td>Boost Converter</td><td>MT3608 or AP64532</td><td>If the 3.3V rail needs more current than battery gives directly</td></tr>
@@ -177,7 +166,6 @@
 <table>
   <tr><th>Component</th><th>Recommendation</th><th>Notes</th></tr>
   <tr><td>Enclosure</td><td>IP65 project box (RamPro / ABB)</td><td>~150x100x70mm</td></tr>
-  <tr><td>Sensor Mast</td><td>Stainless steel or PVC pipe</td><td>Anemometer top, wind vane below (40-60cm above box)</td></tr>
   <tr><td>Weather Shield</td><td>Stevenson screen or equivalent</td><td>Ventilated enclosure for BME280</td></tr>
   <tr><td>Cable Glands</td><td>IP68 cable glands</td><td>For wires entering the enclosure</td></tr>
   <tr><td>Mounting Hardware</td><td>316 stainless steel</td><td>Marine-grade, terrace-mountable</td></tr>
@@ -195,7 +183,7 @@
 <table>
   <tr><th>Mode</th><th>Current</th><th>Duration/day</th><th>mAh/day</th></tr>
   <tr><td>Deep sleep</td><td>~6µA (C3) / ~20µA (WROOM)</td><td>23h 55m</td><td>~0.5</td></tr>
-  <tr><td>Sensor read (BME280 I2C)</td><td>~0.5mA</td><td>5s</td><td>~0.0</td></tr>
+  <tr><td>Sensor read (BME280 + VEML6075 I2C)</td><td>~0.5mA</td><td>5s</td><td>~0.0</td></tr>
   <tr><td>LoRa TX (20dBm, 10s)</td><td>~120mA</td><td>10s/cycle</td><td>~0.3</td></tr>
   <tr><td>MCU init/wake</td><td>~50mA</td><td>2s</td><td>~0.0</td></tr>
   <tr><td><strong>Total per cycle</strong></td><td></td><td></td><td><strong>~0.8 mAh</strong></td></tr>
@@ -203,7 +191,7 @@
 <p>With a 3500 mAh battery: <strong>~4,300 cycles</strong> at 1 cycle/hour = <strong>~6 months</strong> autonomy. Add 30-50% margin for aging, cold, and cloudy days = <strong>4-6 months real-world</strong>.</p>
 
 <div class="footer">
-  <p>orock-pages · <a href="index.html">index</a> · <em>Compiled from community guides, official documentation, and open-source projects. Last updated August 2026.</em></p>
+  <p>orock-pages · <a href="index.html">index</a> · <em>Compiled from community guides, official documentation, and open-source projects. Last updated September 2026.</em></p>
 </div>
 
 </body>
